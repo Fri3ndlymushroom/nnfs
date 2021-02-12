@@ -1,9 +1,13 @@
+
 import numpy as np
 import nnfs
 from nnfs.datasets import spiral_data
+
 nnfs.init()
 
+
 # ====================================[Dense layer]====================================
+
 
 
 class Layer_Dense:
@@ -19,7 +23,6 @@ class Layer_Dense:
     def forward(self, inputs):
         # Die Inputs werden gespeichert
         self.inputs = inputs
-
         # Die outputs werden gespeichert
         # Mit np.dot werdn die inputs zuerst alle multipliziert dann werden die produkte addiert und am ende der Bias hinzugefügt
         self.output = np.dot(inputs, self.weights) + self.biases
@@ -75,15 +78,15 @@ class Activation_Softmax:
         # Erstellt ein Array in der Form von dvlaues mit nullen gefüllt
         self.dinputs = np.empty_like(dvalues)
         # Enumerate outputs and gradients
-    for index, (single_output, single_dvalues) in enumerate(zip(self.output, dvalues)):
-        # output Array abflachen
-        single_output = single_output.reshape(-1, 1)
-        # Jacobian matrix aus output berechnen
-        jacobian_matrix = np.diagflat(
-            single_output) - np.dot(single_output, single_output.T)
-        # sample weise den gradient berechnen
-        # zum Array hinzu addieren
-        self.dinputs[index] = np.dot(jacobian_matrix, single_dvalues)
+        for index, (single_output, single_dvalues) in enumerate(zip(self.output, dvalues)):
+            # output Array abflachen
+            single_output = single_output.reshape(-1, 1)
+            # Jacobian matrix aus output berechnen
+            jacobian_matrix = np.diagflat(
+                single_output) - np.dot(single_output, single_output.T)
+            # sample weise den gradient berechnen
+            # zum Array hinzu addieren
+            self.dinputs[index] = np.dot(jacobian_matrix, single_dvalues)
 
 # ====================================[SGD optimizer]====================================
 
@@ -204,10 +207,10 @@ class Optimizer_RMSprop:
             (1 - self.rho) * layer.dweights**2
         layer.bias_cache = self.rho * layer.bias_cache + \
             (1 - self.rho) * layer.dbiases**2
-    # Vanilla SGD parameter update + normalisierung
-    # mit square rooted cache
-    layer.weights += -self.current_learning_rate * layer.dweights(np.sqrt(layer.weight_cache) + self.epsilon)
-    layer.biases += -self.current_learning_rate * layer.dbiases(np.sqrt(layer.bias_cache) + self.epsilon)
+        # Vanilla SGD parameter update + normalisierung
+        # mit square rooted cache
+        layer.weights += -self.current_learning_rate * layer.dweights(np.sqrt(layer.weight_cache) + self.epsilon)
+        layer.biases += -self.current_learning_rate * layer.dbiases(np.sqrt(layer.bias_cache) + self.epsilon)
     # einmal nach jedem parameter update aufrufen
 
     def post_update_params(self):
@@ -413,3 +416,8 @@ for epoch in range(10001):
     optimizer.update_params(dense1)
     optimizer.update_params(dense2)
     optimizer.post_update_params()
+
+
+
+
+
